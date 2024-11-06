@@ -135,9 +135,9 @@ class models:
       for i in range(len(pred)):
          if(pred[i]==real[i] and pred[i]==1):
             tp+=1
-         elif(pred[i]==real[i] and pred[i]==0):
+         elif(pred[i]==real[i] and pred[i]==-1):
             tn+=1
-         elif(pred[i]==0 and real[i]==1):
+         elif(pred[i]==-1 and real[i]==1):
             fn+=1
          else:
             fp+=1             
