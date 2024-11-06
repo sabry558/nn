@@ -4,7 +4,9 @@ import pandas as pd
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-from models import models  # Assumes your model class is in models.py
+from sklearn.metrics import confusion_matrix
+from models import models  
+import seaborn as sns
 
 def button_clicked():
     features = ['gender', 'body mass', 'beak_length', 'beak_depth', 'fin_length']
@@ -50,11 +52,13 @@ def button_clicked():
     model.read_csv("birds.csv")
     
     if model_choice.get() == "Perceptron":
-        predictions, X_test,Y_test = model.preceptron_model(features.index(f1), features.index(f2), c1, c2)
+        predictions, X_test,Y_test  , acc = model.preceptron_model(features.index(f1), features.index(f2), c1, c2)
     elif model_choice.get() == "Adaline":
-        predictions, X_test,Y_test = model.adaline_model(features.index(f1), features.index(f2), c1, c2)
-
+        predictions, X_test,Y_test , acc = model.adaline_model(features.index(f1), features.index(f2), c1, c2)
+    acc_label.configure(text="Accuracy = "+str(acc*100)+" %")
     plot_decision_boundary(X_test, Y_test, model)
+    plot_confusion_matrix(model.confusion_mat(predictions,Y_test))
+    
 
 def plot_decision_boundary(X_test, Y_test, model):
     ax.clear()  
@@ -86,10 +90,24 @@ def plot_decision_boundary(X_test, Y_test, model):
     ax.set_ylim(-3, 3)
 
     canvas.draw()  
+    
+    
+def plot_confusion_matrix(confusion):
+    conf_matrix = confusion
+    fig, ax = plt.subplots(figsize=(5, 4))  
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", cbar=False, ax=ax)
+    ax.set_xlabel("Predicted Labels")
+    ax.set_ylabel("True Labels")
+    ax.set_title("Confusion Matrix")
+
+    canvas = FigureCanvasTkAgg(fig, master=root)  
+    canvas.draw()
+
+    canvas.get_tk_widget().place(x=250, y=100)
 
 root = tk.Tk()
 root.configure(bg="#2E2E2E")
-root.geometry("1280x720")
+root.geometry("1500x720")
 
 plt.style.use('dark_background')
 plt.rcParams['figure.facecolor'] = '#1A1A1A'
@@ -104,7 +122,7 @@ fig, ax = plt.subplots()
 fig.set_size_inches(6, 5)
 canvas = FigureCanvasTkAgg(master=root, figure=fig)
 plot = canvas.get_tk_widget()
-plot.place(x=500, y=10)
+plot.place(x=800, y=10)
 
 features_box1 = ctk.CTkComboBox(root, values=['gender', 'body mass', 'beak_length', 'beak_depth', 'fin_length'])
 features_box2 = ctk.CTkComboBox(root, values=['gender', 'body mass', 'beak_length', 'beak_depth', 'fin_length'])
@@ -136,5 +154,8 @@ error_label = ctk.CTkLabel(root, text_color="red", text="")
 error_label.place(x=10, y=380)
 predict_button = ctk.CTkButton(root, text="Predict", command=button_clicked)
 predict_button.place(x=10, y=410)
+
+acc_label = ctk.CTkLabel(root, text_color="green", text="Accuracy :" , font=("",26))
+acc_label.place(x=350,y=30)
 
 root.mainloop()

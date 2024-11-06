@@ -60,7 +60,7 @@ class models:
         X_test = np.hstack((np.ones((X_test.shape[0], 1)), X_test))
        else:
           self.weights=np.random.rand(2)
-          Y_train = np.array(Y_train)  # Convert Y_train to a NumPy array
+          Y_train = np.array(Y_train)  
        X_train = np.array(X_train, dtype=float)
        for epoch in range(self.epochs):
             for i in range(len(X_train)):
@@ -74,7 +74,7 @@ class models:
        predictions = [self.predict_perceptron(x) for x in X_test]
        print(self.accuracy(predictions,Y_test))
 
-       return predictions,X_test,Y_test
+       return predictions,X_test,Y_test ,self.accuracy(predictions,Y_test)
    
 
 
@@ -104,7 +104,7 @@ class models:
       predictions = [self.predict_adaline(x) for x in X_test]
 
       print(self.accuracy(predictions,Y_test))
-      return predictions,X_test,Y_test
+      return predictions,X_test,Y_test , self.accuracy(predictions,Y_test)
        
 
 
@@ -142,7 +142,7 @@ class models:
          else:
             fp+=1             
 
-      return tp,tn,fp,fn       
+      return [[tn,fp],[fn,tp]]       
 
                
              
